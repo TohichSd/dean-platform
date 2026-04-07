@@ -185,6 +185,50 @@ export function ExamDetailsPage({params}) {
             a.student_name.localeCompare(b.student_name, "ru")
         );
     }, [students]);
+    const assessmentStats = useMemo(() => {
+        let count5 = 0;
+        let count4 = 0;
+        let count3 = 0;
+        let count2 = 0;
+        let absentCount = 0;
+        let gradedSum = 0;
+        let gradedCount = 0;
+
+        for (const item of students) {
+            if (item.is_absent) {
+                absentCount += 1;
+                continue;
+            }
+
+            if (item.result_value === 5) {
+                count5 += 1;
+                gradedSum += 5;
+                gradedCount += 1;
+            } else if (item.result_value === 4) {
+                count4 += 1;
+                gradedSum += 4;
+                gradedCount += 1;
+            } else if (item.result_value === 3) {
+                count3 += 1;
+                gradedSum += 3;
+                gradedCount += 1;
+            } else if (item.result_value === 2) {
+                count2 += 1;
+                gradedSum += 2;
+                gradedCount += 1;
+            }
+        }
+
+        return {
+            count5,
+            count4,
+            count3,
+            count2,
+            absentCount,
+            averageScore:
+                gradedCount > 0 ? (gradedSum / gradedCount).toFixed(2) : "—",
+        };
+    }, [students]);
 
     if (loading) {
         return <div className="empty-state">Загрузка аттестации...</div>;
@@ -249,6 +293,37 @@ export function ExamDetailsPage({params}) {
               {assessment.is_retake ? "Да" : "Нет"}
             </span>
                     </div>
+                </div>
+            </div>
+            <div className="stats-grid">
+                <div className="stat-card">
+                    <div className="stat-card__label">Оценок 5</div>
+                    <div className="stat-card__value">{assessmentStats.count5}</div>
+                </div>
+
+                <div className="stat-card">
+                    <div className="stat-card__label">Оценок 4</div>
+                    <div className="stat-card__value">{assessmentStats.count4}</div>
+                </div>
+
+                <div className="stat-card">
+                    <div className="stat-card__label">Оценок 3</div>
+                    <div className="stat-card__value">{assessmentStats.count3}</div>
+                </div>
+
+                <div className="stat-card">
+                    <div className="stat-card__label">Оценок 2</div>
+                    <div className="stat-card__value">{assessmentStats.count2}</div>
+                </div>
+
+                <div className="stat-card">
+                    <div className="stat-card__label">Неявок</div>
+                    <div className="stat-card__value">{assessmentStats.absentCount}</div>
+                </div>
+
+                <div className="stat-card">
+                    <div className="stat-card__label">Средний балл</div>
+                    <div className="stat-card__value">{assessmentStats.averageScore}</div>
                 </div>
             </div>
 
